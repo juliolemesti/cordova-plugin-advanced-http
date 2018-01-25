@@ -487,7 +487,11 @@ forHTTPHeaderField:(NSString *)field
         } else {
             switch (self.queryStringSerializationStyle) {
                 case AFHTTPRequestQueryStringDefaultStyle:
-                    query = AFQueryStringFromParameters(parameters);
+                    if([parameters isKindOfClass:[NSString class]]){
+                        query = parameters;
+                    } else {
+                        query = AFQueryStringFromParameters(parameters);
+                    }
                     break;
             }
         }

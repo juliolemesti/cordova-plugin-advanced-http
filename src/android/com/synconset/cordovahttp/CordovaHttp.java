@@ -147,7 +147,7 @@ abstract class CordovaHttp {
     } else if (new String("text").equals(this.getSerializerName())) {
         request.send(this.getParamsObject().toString());
     } else {
-        request.send(this.getParamsObject().toString());
+      request.form(this.getParamsMap());
     }
 
       return request;

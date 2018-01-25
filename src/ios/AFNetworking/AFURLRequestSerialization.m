@@ -487,7 +487,7 @@ forHTTPHeaderField:(NSString *)field
         } else {
             switch (self.queryStringSerializationStyle) {
                 case AFHTTPRequestQueryStringDefaultStyle:
-                    if([parameters isKindOfClass:[NSString class]]){
+                    if([parameters isKindOfClass:[NSString class]] && [[mutableRequest valueForHTTPHeaderField:@"Content-Type"] isEqualToString:@"application/jwt"]){
                         query = parameters;
                     } else {
                         query = AFQueryStringFromParameters(parameters);

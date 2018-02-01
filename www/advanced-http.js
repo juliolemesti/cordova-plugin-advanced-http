@@ -97,7 +97,7 @@ function checkSerializer(serializer) {
         return serializer;
     }
 
-    return serializer[0];
+    return serializer;
 }
 
 function resolveCookieString(headers) {

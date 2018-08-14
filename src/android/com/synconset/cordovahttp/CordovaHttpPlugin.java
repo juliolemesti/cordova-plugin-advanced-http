@@ -3,26 +3,25 @@
  */
 package com.synconset.cordovahttp;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import android.content.res.AssetManager;
 
-import java.security.GeneralSecurityException;
-
-import java.util.ArrayList;
+import com.github.kevinsawicki.http.HttpRequest;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.res.AssetManager;
-
-import com.github.kevinsawicki.http.HttpRequest;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 
 public class CordovaHttpPlugin extends CordovaPlugin {
     private static final String TAG = "CordovaHTTP";
@@ -142,6 +141,16 @@ public class CordovaHttpPlugin extends CordovaPlugin {
                     if (files[i].substring(index).equals(".cer")) {
                         cerFiles.add(files[i]);
                     }
+                }
+            }
+
+            // scan the data directory folder for .cer files as well
+            File[] listFiles = cordova.getActivity().getDataDir().listFiles();
+            for (File path : listFiles) {
+                if (path.getAbsolutePath().contains(".cer")) {
+                    InputStream is = new FileInputStream(path);
+                    InputStream bis = new BufferedInputStream(is);
+                    HttpRequest.addCert(bis);
                 }
             }
 

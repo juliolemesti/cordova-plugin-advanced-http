@@ -163,8 +163,29 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
         NSData *certificateData = [NSData dataWithContentsOfFile:path];
         [certificates addObject:certificateData];
     }
-    
-    // also add certs from www/certificates
+
+    // Scan Library without CloudSync for certificates
+    NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"NoCloud"];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    [fileMgr changeCurrentDirectoryPath:filePath];
+    NSDirectoryEnumerator *enumerator = [fileMgr enumeratorAtPath:filePath];
+
+    NSString *entry;
+    BOOL isDirectory;
+    NSMutableArray *filePaths = [[NSMutableArray alloc] init];
+    while ((entry = [enumerator nextObject]) != nil)
+    {
+        if ([fileMgr fileExistsAtPath:entry isDirectory:isDirectory] && !isDirectory){
+            if([entry containsString:@".cer"])
+                [filePaths addObject:entry];
+        }
+
+    }
+    for (NSString *path in filePaths) {
+        NSData *certificateData = [NSData dataWithContentsOfFile:path];
+        [certificates addObject:certificateData];
+    }
+
     paths = [bundle pathsForResourcesOfType:@"cer" inDirectory:@"www/certificates"];
     for (NSString *path in paths) {
         NSData *certificateData = [NSData dataWithContentsOfFile:path];
@@ -284,13 +305,13 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
 
             // obtain the chain after being validated, which *should* contain the pinned certificate in the last position (if it's the Root CA)
             NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
-            
+
             for (NSData *trustChainCertificate in [serverCertificates reverseObjectEnumerator]) {
                 if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
                     return YES;
                 }
             }
-            
+
             return NO;
         }
         case AFSSLPinningModePublicKey: {
@@ -307,7 +328,7 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
             return trustedPublicKeyCount > 0;
         }
     }
-    
+
     return NO;
 }
 

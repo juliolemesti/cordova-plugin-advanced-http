@@ -196,12 +196,8 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
 }
 
 + (NSSet *)defaultPinnedCertificates {
-    static NSSet *_defaultPinnedCertificates = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        _defaultPinnedCertificates = [self certificatesInBundle:bundle];
-    });
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    NSSet *_defaultPinnedCertificates = [self certificatesInBundle:bundle];
 
     return _defaultPinnedCertificates;
 }
